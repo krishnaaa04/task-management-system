@@ -1,6 +1,9 @@
 from manager.task_manager import TaskManager
 
 def print_menu():
+    """
+    Displays the main menu options for the CLI Task Management System.
+    """
     print("\n--- Task Management System ---")
     print("1. Create User")
     print("2. Create Task")
@@ -14,6 +17,10 @@ def print_menu():
     print("10. Exit")
 
 def main():
+    """
+    Main function to run the CLI-based task manager.
+    Handles user input and performs corresponding operations.
+    """
     task_manager = TaskManager()
 
     while True:
@@ -33,8 +40,6 @@ def main():
                 description = input("Enter description: ").strip()
                 due_date = input("Enter due date (YYYY-MM-DD): ").strip()
                 priority = input("Enter priority (Low, Medium, High): ").strip().capitalize()
-                if priority not in ["Low", "Medium", "High"]:
-                    raise ValueError("Invalid priority.")
                 task_manager.create_task(task_id, title, description, due_date, priority)
 
             elif choice == "3":
@@ -45,15 +50,11 @@ def main():
             elif choice == "4":
                 task_id = int(input("Enter Task ID: "))
                 new_status = input("Enter new status (To Do, In Progress, Done): ").strip().title()
-                if new_status not in ["To Do", "In Progress", "Done"]:
-                    raise ValueError("Invalid status.")
                 task_manager.update_task_status(task_id, new_status)
 
             elif choice == "5":
                 task_id = int(input("Enter Task ID: "))
                 new_priority = input("Enter new priority (Low, Medium, High): ").strip().capitalize()
-                if new_priority not in ["Low", "Medium", "High"]:
-                    raise ValueError("Invalid priority.")
                 task_manager.update_task_priority(task_id, new_priority)
 
             elif choice == "6":
@@ -78,8 +79,6 @@ def main():
 
             elif choice == "9":
                 status = input("Enter status to filter (To Do, In Progress, Done): ").strip().title()
-                if status not in ["To Do", "In Progress", "Done"]:
-                    raise ValueError("Invalid status.")
                 tasks = task_manager.list_tasks_by_status(status)
                 if tasks:
                     for task in tasks:
