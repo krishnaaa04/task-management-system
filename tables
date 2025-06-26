@@ -1,0 +1,38 @@
+mysql> use task_manager;
+Database changed
+mysql> show tables;
++------------------------+
+| Tables_in_task_manager |
++------------------------+
+| tasks                  |
+| users                  |
++------------------------+
+2 rows in set (0.01 sec)
+
+mysql> desc tasks;
++-------------+------------------------------------+------+-----+---------+----------------+
+| Field       | Type                               | Null | Key | Default | Extra          |
++-------------+------------------------------------+------+-----+---------+----------------+
+| task_id     | int                                | NO   | PRI | NULL    | auto_increment |
+| title       | varchar(100)                       | NO   |     | NULL    |                |
+| description | text                               | YES  |     | NULL    |                |
+| assigned_to | int                                | YES  | MUL | NULL    |                |
+| status      | enum('To Do','In Progress','Done') | YES  |     | To Do   |                |
+| priority    | enum('Low','Medium','High')        | YES  |     | Medium  |                |
+| due_date    | date                               | YES  |     | NULL    |                |
++-------------+------------------------------------+------+-----+---------+----------------+
+7 rows in set (0.03 sec)
+
+mysql> desc users;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| user_id | int          | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(100) | NO   |     | NULL    |                |
+| email   | varchar(100) | NO   | UNI | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+3 rows in set (0.01 sec)
+
+mysql>
+
+
