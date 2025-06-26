@@ -20,85 +20,84 @@ def main():
         print_menu()
         choice = input("Enter your choice (1-10): ")
 
-        if choice == "1":
-            user_id = int(input("Enter User ID: "))
-            name = input("Enter name: ")
-            email = input("Enter email: ")
-            task_manager.create_user(user_id, name, email)
-            print(" User created.")
+        try:
+            if choice == "1":
+                user_id = int(input("Enter User ID: "))
+                name = input("Enter name: ").strip()
+                email = input("Enter email: ").strip()
+                task_manager.create_user(user_id, name, email)
 
-        elif choice == "2":
-            task_id = int(input("Enter Task ID: "))
-            title = input("Enter title: ")
-            description = input("Enter description: ")
-            due_date = input("Enter due date (YYYY-MM-DD): ")
-            priority = input("Enter priority (Low, Medium, High): ")
-            task_manager.create_task(task_id, title, description, due_date, priority)
-            print(" Task created.")
+            elif choice == "2":
+                task_id = int(input("Enter Task ID: "))
+                title = input("Enter title: ").strip()
+                description = input("Enter description: ").strip()
+                due_date = input("Enter due date (YYYY-MM-DD): ").strip()
+                priority = input("Enter priority (Low, Medium, High): ").strip().capitalize()
+                if priority not in ["Low", "Medium", "High"]:
+                    raise ValueError("Invalid priority.")
+                task_manager.create_task(task_id, title, description, due_date, priority)
 
-        elif choice == "3":
-            task_id = int(input("Enter Task ID: "))
-            user_id = int(input("Enter User ID to assign task: "))
-            task_manager.assign_task_to_user(task_id, user_id)
-            print(" Task assigned.")
+            elif choice == "3":
+                task_id = int(input("Enter Task ID: "))
+                user_id = int(input("Enter User ID to assign task: "))
+                task_manager.assign_task_to_user(task_id, user_id)
 
-        elif choice == "4":
-            task_id = int(input("Enter Task ID: "))
-            new_status = input("Enter new status (To Do, In Progress, Done): ")
-            task = task_manager.get_task(task_id)
-            if task:
-                task.update_status(new_status)
-                print("Status updated.")
-            else:
-                print(" Task not found.")
+            elif choice == "4":
+                task_id = int(input("Enter Task ID: "))
+                new_status = input("Enter new status (To Do, In Progress, Done): ").strip().title()
+                if new_status not in ["To Do", "In Progress", "Done"]:
+                    raise ValueError("Invalid status.")
+                task_manager.update_task_status(task_id, new_status)
 
-        elif choice == "5":
-            task_id = int(input("Enter Task ID: "))
-            new_priority = input("Enter new priority (Low, Medium, High): ")
-            task = task_manager.get_task(task_id)
-            if task:
-                task.update_priority(new_priority)
-                print(" Priority updated.")
-            else:
-                print("Task not found.")
+            elif choice == "5":
+                task_id = int(input("Enter Task ID: "))
+                new_priority = input("Enter new priority (Low, Medium, High): ").strip().capitalize()
+                if new_priority not in ["Low", "Medium", "High"]:
+                    raise ValueError("Invalid priority.")
+                task_manager.update_task_priority(task_id, new_priority)
 
-        elif choice == "6":
-            task_id = int(input("Enter Task ID to delete: "))
-            task_manager.delete_task(task_id)
-            print("Task deleted if it existed.")
+            elif choice == "6":
+                task_id = int(input("Enter Task ID to delete: "))
+                task_manager.delete_task(task_id)
 
-        elif choice == "7":
-            print("\n--- All Tasks ---")
-            for task in task_manager.list_all_tasks():
-                print(task)
-                print("-" * 40)
-
-        elif choice == "8":
-            user_id = int(input("Enter User ID: "))
-            tasks = task_manager.list_tasks_by_user(user_id)
-            if tasks:
-                for task in tasks:
+            elif choice == "7":
+                print("\n--- All Tasks ---")
+                for task in task_manager.list_all_tasks():
                     print(task)
                     print("-" * 40)
+
+            elif choice == "8":
+                user_id = int(input("Enter User ID: "))
+                tasks = task_manager.list_tasks_by_user(user_id)
+                if tasks:
+                    for task in tasks:
+                        print(task)
+                        print("-" * 40)
+                else:
+                    print("No tasks found for this user.")
+
+            elif choice == "9":
+                status = input("Enter status to filter (To Do, In Progress, Done): ").strip().title()
+                if status not in ["To Do", "In Progress", "Done"]:
+                    raise ValueError("Invalid status.")
+                tasks = task_manager.list_tasks_by_status(status)
+                if tasks:
+                    for task in tasks:
+                        print(task)
+                        print("-" * 40)
+                else:
+                    print("No tasks with this status.")
+
+            elif choice == "10":
+                print("Exiting... Goodbye!")
+                break
+
             else:
-                print(" No tasks found for this user.")
-
-        elif choice == "9":
-            status = input("Enter status to filter (To Do, In Progress, Done): ")
-            tasks = task_manager.list_tasks_by_status(status)
-            if tasks:
-                for task in tasks:
-                    print(task)
-                    print("-" * 40)
-            else:
-                print(" No tasks with this status.")
-
-        elif choice == "10":
-            print(" Exiting... Goodbye!")
-            break
-
-        else:
-            print(" Invalid choice. Try again.")
+                print("Invalid choice. Try again.")
+        except ValueError as ve:
+            print("Input Error:", ve)
+        except Exception as e:
+            print("An error occurred:", e)
 
 if __name__ == "__main__":
     main()
