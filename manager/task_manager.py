@@ -6,14 +6,11 @@ class TaskManager:
     Handles all task and user management operations using MySQL database.
     """
 
-    def create_user(self, user_id, name, email):
-        """
-        Inserts a new user into the users table.
-        """
+    def create_user(self, name, email):
         try:
             conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO users (user_id, name, email) VALUES (%s, %s, %s)", (user_id, name, email))
+            cursor.execute("INSERT INTO users (name, email) VALUES (%s, %s)", (name, email))
             conn.commit()
         except Exception as e:
             print("Error:", e)
@@ -21,7 +18,7 @@ class TaskManager:
             cursor.close()
             conn.close()
 
-    def create_task(self, task_id, title, description, due_date, priority):
+    def create_task(self, title, description, due_date, priority, status="To Do", assigned_to=None):
         """
         Inserts a new task into the tasks table.
         """
@@ -29,9 +26,9 @@ class TaskManager:
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO tasks (task_id, title, description, due_date, priority)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (task_id, title, description, due_date, priority))
+                INSERT INTO tasks (title, description, due_date, priority, status, assigned_to)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (title, description, due_date, priority, status, assigned_to))
             conn.commit()
         except Exception as e:
             print("Error:", e)
@@ -40,9 +37,6 @@ class TaskManager:
             conn.close()
 
     def assign_task_to_user(self, task_id, user_id):
-        """
-        Assigns a task to a user by updating the task's assigned_to field.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor()
@@ -55,9 +49,6 @@ class TaskManager:
             conn.close()
 
     def update_task_status(self, task_id, new_status):
-        """
-        Updates the status of a specific task.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor()
@@ -70,9 +61,6 @@ class TaskManager:
             conn.close()
 
     def update_task_priority(self, task_id, new_priority):
-        """
-        Updates the priority of a specific task.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor()
@@ -85,9 +73,6 @@ class TaskManager:
             conn.close()
 
     def delete_task(self, task_id):
-        """
-        Deletes a task from the database.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor()
@@ -100,9 +85,6 @@ class TaskManager:
             conn.close()
 
     def list_all_tasks(self):
-        """
-        Retrieves all tasks from the database.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor(dictionary=True)
@@ -117,9 +99,6 @@ class TaskManager:
             conn.close()
 
     def list_tasks_by_user(self, user_id):
-        """
-        Retrieves all tasks assigned to a specific user.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor(dictionary=True)
@@ -134,9 +113,6 @@ class TaskManager:
             conn.close()
 
     def list_tasks_by_status(self, status):
-        """
-        Retrieves all tasks filtered by a given status.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor(dictionary=True)
@@ -151,9 +127,6 @@ class TaskManager:
             conn.close()
 
     def get_task(self, task_id):
-        """
-        Retrieves a task by its ID.
-        """
         try:
             conn = get_connection()
             cursor = conn.cursor(dictionary=True)

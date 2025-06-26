@@ -1,3 +1,5 @@
+# main.py - CLI Interface (Updated to remove task_id input)
+
 from manager.task_manager import TaskManager
 
 def print_menu():
@@ -29,18 +31,16 @@ def main():
 
         try:
             if choice == "1":
-                user_id = int(input("Enter User ID: "))
                 name = input("Enter name: ").strip()
                 email = input("Enter email: ").strip()
-                task_manager.create_user(user_id, name, email)
+                task_manager.create_user(name, email)
 
             elif choice == "2":
-                task_id = int(input("Enter Task ID: "))
                 title = input("Enter title: ").strip()
                 description = input("Enter description: ").strip()
                 due_date = input("Enter due date (YYYY-MM-DD): ").strip()
                 priority = input("Enter priority (Low, Medium, High): ").strip().capitalize()
-                task_manager.create_task(task_id, title, description, due_date, priority)
+                task_manager.create_task(title, description, due_date, priority)
 
             elif choice == "3":
                 task_id = int(input("Enter Task ID: "))

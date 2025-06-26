@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🌸 Task Manager</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fef6ff;
+      color: #444;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #b94fc8;
+      text-align: center;
+    }
+
+    form, .task-list {
+      background: #fff0fa;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 20px auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #e066b0;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #d34aa1;
+    }
+
+    .task {
+      background-color: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 2px dashed #f3b2d3;
+      border-radius: 10px;
+    }
+
+    .task h3 {
+      margin: 0 0 5px;
+    }
+
+    .task-actions button {
+      margin-top: 10px;
+      margin-right: 10px;
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌸 Add New Task</h1>
+
+  <form id="taskForm">
+    <input type="text" id="title" placeholder="Title" required>
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="date" id="due_date" required>
+    <select id="priority" required>
+      <option value="Low">Low</option>
+      <option value="Medium" selected>Medium</option>
+      <option value="High">High</option>
+    </select>
+    <select id="status" required>
+      <option value="To Do" selected>To Do</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Done">Done</option>
+    </select>
+    <input type="number" id="assigned_to" placeholder="User ID (optional)">
+    <button type="submit">➕ Add Task</button>
+  </form>
+
+  <div class="task-list" id="taskList">
+    <h2>📋 All Tasks</h2>
+    <div id="tasksContainer"></div>
+  </div>
+
+  <script>
+    async function fetchTasks() {
+      const res = await fetch('/tasks');
+      const tasks = await res.json();
+      const container = document.getElementById('tasksContainer');
+      container.innerHTML = '';
+
+      tasks.forEach(task => {
+        const div = document.createElement('div');
+        div.className = 'task';
+        div.innerHTML = `
+          <h3>📝 ${task.title}</h3>
+          <p><strong>Due:</strong> ${task.due_date}</p>
+          <p><strong>Priority:</strong> ${task.priority}</p>
+          <p><strong>Status:</strong> ${task.status}</p>
+          <p><strong>Assigned To:</strong> ${task.assigned_to || 'Unassigned'}</p>
+          <p><strong>Description:</strong> ${task.description || 'None'}</p>
+          <div class="task-actions">
+            <select id="status-${task.task_id}">
+              <option ${task.status === 'To Do' ? 'selected' : ''}>To Do</option>
+              <option ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option ${task.status === 'Done' ? 'selected' : ''}>Done</option>
+            </select>
+            <select id="priority-${task.task_id}">
+              <option ${task.priority === 'Low' ? 'selected' : ''}>Low</option>
+              <option ${task.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+              <option ${task.priority === 'High' ? 'selected' : ''}>High</option>
+            </select>
+            <button onclick="updateTask(${task.task_id})">🔄 Update</button>
+            <button onclick="deleteTask(${task.task_id})">🗑️ Delete</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function updateTask(id) {
+      const newStatus = document.getElementById(`status-${id}`).value;
+      const newPriority = document.getElementById(`priority-${id}`).value;
+
+      await fetch(`/tasks/${id}/status`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      await fetch(`/tasks/${id}/priority`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ priority: newPriority })
+      });
+
+      fetchTasks();
+    }
+
+    async function deleteTask(id) {
+      await fetch(`/tasks/${id}`, {
+        method: 'DELETE'
+      });
+      fetchTasks();
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const assignedToValue = document.getElementById('assigned_to').value;
+
+      const taskData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        due_date: document.getElementById('due_date').value,
+        priority: document.getElementById('priority').value,
+        status: document.getElementById('status').value,
+        assigned_to: assignedToValue ? parseInt(assignedToValue) : null
+      };
+
+      const response = await fetch('/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(taskData)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("✅ " + result.message);
+        document.getElementById('taskForm').reset();
+        fetchTasks();
+      } else {
+        alert("❌ Error: " + (result.error || 'Something went wrong'));
+      }
+    });
+
+    fetchTasks(); // load tasks on page load
+  </script>
+</body>
+</html>
